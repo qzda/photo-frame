@@ -9,10 +9,12 @@
     "dev": "bun run ./src/index.ts"
   },
   "dependencies": {
-    "@types/bun": "latest",
-    "@types/node": "^20.14.12",
     "cliui": "^8.0.1",
     "kleur": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20.14.12"
   },
   "bin": {
     "photo-frame": "bin/index.js"
