@@ -1,0 +1,43 @@
+{
+  "name": "photo-frame",
+  "version": "1.0.1",
+  "description": "Generate a photo frame in accordance with the EXIF information of the picture.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir=dist --target=node",
+    "dev": "bun run ./src/index.ts"
+  },
+  "dependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20.14.12",
+    "cliui": "^8.0.1",
+    "kleur": "^4.1.5"
+  },
+  "bin": {
+    "photo-frame": "bin/index.js"
+  },
+  "readme": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qzda/photo-frame.git"
+  },
+  "keywords": [
+    "exif",
+    "photo-frame",
+    "generate"
+  ],
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "qzda <qinzhidaoa@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qzda/photo-frame/issues"
+  },
+  "homepage": "https://github.com/qzda/photo-frame#readme"
+}
