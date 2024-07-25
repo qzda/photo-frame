@@ -1,6 +1,6 @@
 import kleur from "kleur";
 
-export function generat(i: string, o: string) {
+export function generate(i: string, o: string) {
   return new Promise(async (resolve, reject) => {
     const LoadingText = [".", "..", "..."];
     let spinner = LoadingText[0];
