@@ -7,15 +7,18 @@
   "scripts": {
     "build": "bun build ./src/index.ts --outdir=dist --target=node",
     "build:pro": "bun build ./src/index.ts --outdir=dist --target=node --minify",
-    "dev": "bun run ./src/index.ts"
+    "dev:bun": "bun run ./src/index.ts",
+    "dev:node": "npm run build; node ./dist/index.js"
   },
   "dependencies": {
     "cliui": "^8.0.1",
-    "kleur": "^4.1.5"
+    "kleur": "^4.1.5",
+    "exif": "^0.6.0"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/node": "^20.14.12"
+    "@types/node": "^20.14.12",
+    "@types/exif": "^0.6.5"
   },
   "bin": {
     "photo-frame": "bin/index.js"

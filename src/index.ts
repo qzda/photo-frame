@@ -4,7 +4,7 @@ import { logHelp, logVersion } from "./logs";
 import { generate } from "./generate";
 
 function mian() {
-  const [runtime, filepath, ...args] = process.argv;
+  const args = process.argv.slice(2);
 
   if (args.length === 1 && ["-v", "--version"].includes(args[0])) {
     logVersion();
