@@ -1,7 +1,10 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
-import kleur from "kleur";
+import chalk from "chalk";
 import Exif from "exif";
+import cliui from "cliui";
+import { getPhotoExif } from "./img";
+import { getFullPath } from "../utils";
 
 interface Photo {
   name: string;
@@ -11,25 +14,35 @@ interface Photo {
 }
 
 export function generate(i: string, o: string) {
-  const inputPath = (
-    i.startsWith("~") && process.env.USERPROFILE
-      ? path.join(process.env.USERPROFILE, i.replace("~", ""))
-      : i
-  ).replaceAll("\\", "/");
+  const inputPath = getFullPath(i);
+  const outputPath = getFullPath(o);
+  console.log(outputPath);
 
-  return new Promise(async (resolve, reject) => {
-    const LoadingText = [".", "..", "..."];
+  return new Promise(async (resolve) => {
+    const LoadingText = [".", "..", "...", "....", ".....", "......"];
     let spinner = LoadingText[0];
     const loadingTextIntervalId = setInterval(() => {
       process.stdout.clearLine(0);
       process.stdout.cursorTo(0);
-      process.stdout.write(kleur.gray(`Generating in progress${spinner}`));
+      process.stdout.write(chalk.gray(`Generating in progress${spinner}`));
       spinner = LoadingText[LoadingText.indexOf(spinner) + 1] || LoadingText[0];
-    }, 250);
+    }, 200);
+
+    function stopLoading() {
+      clearInterval(loadingTextIntervalId);
+      process.stdout.clearLine(0);
+      process.stdout.cursorTo(0);
+    }
 
     try {
+      // Make sure the folder exists
+      await readdir(outputPath);
+
       const photos: Photo[] = (await readdir(inputPath))
-        .filter((file) => /\.(jpg|jpeg)$/i.test(file))
+        .filter(
+          (file) =>
+            /\.(jpg|jpeg)$/i.test(file) && file === encodeURIComponent(file)
+        )
         .map((file) => ({
           name: file,
           fullPath: path.join(inputPath, file),
@@ -45,36 +58,55 @@ export function generate(i: string, o: string) {
           } else {
             photo.exif = data;
           }
+
+          // todo 生成图片
         })
       );
-      clearInterval(loadingTextIntervalId);
-      process.stdout.clearLine(0);
-      process.stdout.cursorTo(0);
-      // console.log(photos.filter((photo) => photo.exif));
-      photos.forEach((p) => console.log(p.exif));
-      // todo: 完成情况
-      console.log(kleur.green("Generation complete"));
+      stopLoading();
+      console.log(chalk.green("Generation complete"));
+
+      const ui = cliui({ width: 80 });
+      ui.div({
+        text: chalk.bold("Result:"),
+        padding: [1, 0, 0, 0],
+      });
+      photos.forEach((photo) => {
+        ui.div(
+          {
+            text: photo.name,
+            width: 30,
+            padding: [0, 2, 0, 2],
+          },
+          {
+            text: photo.err
+              ? chalk.red(photo.err.message)
+              : `${chalk.green("Success")}`,
+            padding: [0, 1, 0, 0],
+            width: photo.err ? 50 : 8,
+          },
+          {
+            text: photo.exif
+              ? chalk.gray(
+                  `${photo.exif.image.Model || ""} ${
+                    photo.exif.exif.FNumber ? `f${photo.exif.exif.FNumber}` : ""
+                  } ${
+                    photo.exif.exif.ISO ? `ISO ${photo.exif.exif.ISO}` : ""
+                  }`.trim()
+                )
+              : "",
+            padding: [0, 0, 0, 0],
+            width: 42,
+          }
+        );
+      });
+      console.log(ui.toString());
+
       resolve(null);
     } catch (error) {
-      process.stdout.clearLine(0);
-      process.stdout.cursorTo(0);
+      stopLoading();
+      console.log(chalk.red("Generation error"));
       console.error(error);
-      reject();
+      resolve(null);
     }
   });
-}
-
-function getPhotoExif(path: string): Promise<{
-  data: Exif.ExifData;
-  err: Error | null;
-}> {
-  return new Promise(
-    (resolve) =>
-      new Exif(path, (err, data) => {
-        resolve({
-          data,
-          err,
-        });
-      })
-  );
 }

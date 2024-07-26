@@ -7,6 +7,8 @@ export function logVersion() {
 }
 
 export function logHelp() {
+  console.log(chalk.bold.yellow("Under development"));
+  console.log();
   console.log(chalk.bold("Usage:"));
   console.log(`  photo-frame <${chalk.cyan("command")}> [...args]`);
   console.log();

@@ -1,6 +1,6 @@
 {
   "name": "photo-frame",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generate a photo frame in accordance with the EXIF information of the picture.",
   "main": "index.js",
   "type": "module",
