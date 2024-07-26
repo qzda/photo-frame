@@ -1,4 +1,4 @@
-import kleur from "kleur";
+import chalk from "chalk";
 import cliui from "cliui";
 import { version } from "../package.json";
 
@@ -7,10 +7,10 @@ export function logVersion() {
 }
 
 export function logHelp() {
-  console.log(kleur.bold("Usage:"));
-  console.log(`  photo-frame <${kleur.cyan("command")}> [...args]`);
+  console.log(chalk.bold("Usage:"));
+  console.log(`  photo-frame <${chalk.cyan("command")}> [...args]`);
   console.log();
-  console.log(kleur.bold("Example:"));
+  console.log(chalk.bold("Example:"));
   console.log(`  photo-frame -i ~/foo/bar/photos -o ~/foo/bar/photos/dist`);
 
   const Width = 100;
@@ -21,13 +21,13 @@ export function logHelp() {
   const ui = cliui({ width: Width });
 
   ui.div({
-    text: kleur.bold("Options:"),
+    text: chalk.bold("Options:"),
     padding: PaddingTitle,
   });
 
   ui.div(
     {
-      text: kleur.cyan("-i, --inputdir"),
+      text: chalk.cyan("-i, --inputdir"),
       width: WidthCommand,
       padding: PaddingCommand,
     },
@@ -35,7 +35,7 @@ export function logHelp() {
   );
   ui.div(
     {
-      text: kleur.cyan("-o, --outdir"),
+      text: chalk.cyan("-o, --outdir"),
       width: WidthCommand,
       padding: PaddingCommand,
     },

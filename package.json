@@ -11,8 +11,8 @@
     "dev:node": "npm run build; node ./dist/index.js"
   },
   "dependencies": {
+    "chalk": "^5.3.0",
     "cliui": "^8.0.1",
-    "kleur": "^4.1.5",
     "exif": "^0.6.0"
   },
   "devDependencies": {
