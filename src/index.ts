@@ -3,9 +3,7 @@ import kleur from "kleur";
 import { logHelp, logVersion } from "./logs";
 import { generate } from "./generate";
 
-function mian() {
-  const args = process.argv.slice(2);
-
+function mian(args: string[]) {
   if (args.length === 1 && ["-v", "--version"].includes(args[0])) {
     logVersion();
   } else if (
@@ -28,4 +26,23 @@ function mian() {
   }
 }
 
-mian();
+const args: string[] = [];
+process.argv.slice(2).forEach((arg) => {
+  if (arg.startsWith("-")) {
+    args.push(arg);
+  } else {
+    if (args.at(-1)?.startsWith("-")) {
+      args.push(arg);
+    } else {
+      if (args.at(-1)) {
+        args[args.length - 1] = [args.at(-1) || "", arg].join(" ").trim();
+      } else {
+        args.push(arg);
+      }
+    }
+  }
+});
+
+// console.log(args);
+
+mian(args);
