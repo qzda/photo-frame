@@ -5,6 +5,8 @@ import Exif from "exif";
 import cliui from "cliui";
 import { getPhotoExif } from "./img";
 import { getFullPath } from "../utils";
+import sharp from 'sharp';
+import fs from 'fs';
 
 interface Photo {
   name: string;
@@ -41,7 +43,7 @@ export function generate(i: string, o: string) {
       const photos: Photo[] = (await readdir(inputPath))
         .filter(
           (file) =>
-            /\.(jpg|jpeg)$/i.test(file) && file === encodeURIComponent(file)
+            /\.(jpg|jpeg|heic)$/i.test(file) && file === encodeURIComponent(file)
         )
         .map((file) => ({
           name: file,
@@ -60,6 +62,7 @@ export function generate(i: string, o: string) {
           }
 
           // todo 生成图片
+          generatePhoto(photo)
         })
       );
       stopLoading();
@@ -70,6 +73,7 @@ export function generate(i: string, o: string) {
         text: chalk.bold("Result:"),
         padding: [1, 0, 0, 0],
       });
+      // console.log(photos.map(it => it.exif));
       photos.forEach((photo) => {
         ui.div(
           {
@@ -109,4 +113,37 @@ export function generate(i: string, o: string) {
       resolve(null);
     }
   });
+}
+
+// 生成图片
+async function generatePhoto(photo: Photo) {
+  const newPhoto = await (await addPhotoFrame(photo)).toBuffer()
+  // 将这个bg生成图片到output目录下
+  fs.writeFileSync(path.join('output', photo.name), newPhoto)
+}
+
+async function addPhotoFrame(photo: Photo) {
+  const _photoBuffer = await sharp(photo.fullPath).resize(400).toBuffer()
+  const frame = await generatePhotoFrame(600, 600)
+  const newPhoto = await frame.composite([
+    { input: _photoBuffer,  }
+  ]).png()
+  
+  return newPhoto
+}
+
+async function generatePhotoFrame(
+  width: number, 
+  height: number, 
+  background: {r: number, g: number, b: number, alpha: number} = { r: 255, g: 255, b: 255, alpha: 1 }
+) {
+  const frame = await sharp({
+    create: {
+      width,
+      height,
+      channels: 4,
+      background,
+    }
+  })
+  return frame
 }
