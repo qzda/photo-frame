@@ -1,5 +1,5 @@
 import process from "node:process";
-import chalk from "chalk";
+import prolog from "@qzda/prolog";
 import { logHelp, logVersion } from "./logs";
 import { generate } from "./generate";
 
@@ -21,7 +21,7 @@ function mian(args: string[]) {
     generate(args[1], args[3]);
   } else {
     console.error(
-      `The command ${chalk.bgRed(`photo-frame ${args.join(" ")}`)} is invalid.`
+      `The command ${prolog.bgRed(`photo-frame ${args.join(" ")}`)} is invalid.`
     );
   }
 }

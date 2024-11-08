@@ -1,5 +1,5 @@
-import chalk from "chalk";
 import cliui from "cliui";
+import prolog from "@qzda/prolog";
 import { version } from "../package.json";
 
 export function logVersion() {
@@ -7,12 +7,12 @@ export function logVersion() {
 }
 
 export function logHelp() {
-  console.log(chalk.bold.yellow("Under development"));
+  console.log(prolog.bold(prolog.yellow("Under development"))); // todo
   console.log();
-  console.log(chalk.bold("Usage:"));
-  console.log(`  photo-frame <${chalk.cyan("command")}> [...args]`);
+  console.log(prolog.bold("Usage:"));
+  console.log(`  photo-frame <${prolog.cyan("command")}> [...args]`);
   console.log();
-  console.log(chalk.bold("Example:"));
+  console.log(prolog.bold("Example:"));
   console.log(`  photo-frame -i ~/foo/bar/photos -o ~/foo/bar/photos/dist`);
 
   const Width = 100;
@@ -23,13 +23,13 @@ export function logHelp() {
   const ui = cliui({ width: Width });
 
   ui.div({
-    text: chalk.bold("Options:"),
+    text: prolog.bold("Options:"),
     padding: PaddingTitle,
   });
 
   ui.div(
     {
-      text: chalk.cyan("-i, --inputdir"),
+      text: prolog.cyan("-i, --inputdir"),
       width: WidthCommand,
       padding: PaddingCommand,
     },
@@ -37,7 +37,7 @@ export function logHelp() {
   );
   ui.div(
     {
-      text: chalk.cyan("-o, --outdir"),
+      text: prolog.cyan("-o, --outdir"),
       width: WidthCommand,
       padding: PaddingCommand,
     },
