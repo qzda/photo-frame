@@ -13,7 +13,7 @@ export function logHelp() {
   console.log(`  ${name} ${prolog.cyan("[...args]")}`);
   console.log();
   console.log(prolog.bold("Example:"));
-  console.log(`  ${name} -i ~/foo/bar/input -o ~/foo/bar/photos/dist`);
+  console.log(`  ${name} -i ~/foo/bar/input -o ~/foo/bar/output`);
 
   const Width = 100;
   const WidthCommand = 30;
