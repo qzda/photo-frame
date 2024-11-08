@@ -1,4 +1,4 @@
-# photo-frame
+# Photo Frame
 
 Generate a photo frame in accordance with the EXIF information of the picture.
 

@@ -12,13 +12,14 @@ function mian(args: string[]) {
   ) {
     logHelp();
   } else if (
-    args.length === 4 &&
     ["-i", "--inputdir"].includes(args[0]) &&
     args[1].length &&
     ["-o", "--outdir"].includes(args[2]) &&
     args[3].length
   ) {
-    generate(args[1], args[3]);
+    generate(args[1], args[3], {
+      clear: args.includes("--clear") || args.includes("-c"),
+    });
   } else {
     console.error(
       `The command ${prolog.bgRed(`photo-frame ${args.join(" ")}`)} is invalid.`
