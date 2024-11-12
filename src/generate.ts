@@ -58,12 +58,9 @@ export function generate(
           } else {
             photo.exif = data;
             generatePhoto(photo, outputPath, {
-              background: {
-                r: 256,
-                g: 256,
-                b: 256,
-                alpha: 1,
-              },
+              zoom: [1.2, 1.2],
+              background: [255, 255, 255, 1],
+              fit: "contain",
             })
               .then(() => {
                 photo.done = true;
@@ -146,17 +143,58 @@ export function generate(
 async function generatePhoto(
   photo: Photo,
   outputPath: string,
-  style?: {
-    background?: {
-      r: number;
-      g: number;
-      b: number;
-      alpha: number;
-    };
+  config: {
+    /** zoom x, y */
+    zoom: [number, number];
+    /** rgba */
+    background: [number, number, number, number];
+    position?: string | number;
+    fit?: keyof sharp.FitEnum;
   }
 ) {
+  async function addPhotoFrame(photo: Photo): Promise<sharp.Sharp> {
+    return new Promise(async (resolve, reject) => {
+      const originalImage = sharp(photo.fullPath);
+      const { width, height } = await originalImage.metadata();
+
+      if (!width || !height) {
+        reject(new Error("Image width or height is not found"));
+        return;
+      }
+
+      const frame = sharp({
+        create: {
+          width: Math.round(width * config.zoom[0]),
+          height: Math.round(height * config.zoom[1]),
+          channels: 4,
+          background: {
+            r: config.background[0],
+            g: config.background[1],
+            b: config.background[2],
+            alpha: config.background[3],
+          },
+        },
+      });
+
+      const _photoBuffer = await originalImage
+        .resize(
+          Math.round(width / config.zoom[0]),
+          Math.round(height / config.zoom[1]),
+          {
+            fit: config.fit,
+            position: config.position,
+          }
+        )
+        .toBuffer();
+
+      const newPhoto = frame.composite([{ input: _photoBuffer }]).jpeg();
+
+      resolve(newPhoto);
+    });
+  }
+
   return new Promise(async (resolve, reject) => {
-    await addPhotoFrame(photo, style)
+    await addPhotoFrame(photo)
       .then(async (res) => {
         const newPhoto = await res.toBuffer();
         fs.writeFileSync(path.join(outputPath, photo.name), newPhoto);
@@ -167,58 +205,4 @@ async function generatePhoto(
         reject(err);
       });
   });
-}
-
-async function addPhotoFrame(
-  photo: Photo,
-  style?: {
-    background?: { r: number; g: number; b: number; alpha: number };
-  }
-): Promise<sharp.Sharp> {
-  return new Promise(async (resolve, reject) => {
-    const originalImage = sharp(photo.fullPath);
-    const { width, height } = await originalImage.metadata();
-
-    if (!width || !height) {
-      reject(new Error("Image width or height is not found"));
-      return;
-    }
-
-    const frame = generatePhotoFrame(
-      Math.round(width * 1.2),
-      Math.round(height * 1.2),
-      style?.background
-    );
-
-    const _photoBuffer = await originalImage
-      .resize(Math.round(width / 1.2), Math.round(height / 1.2), {
-        fit: "contain",
-      })
-      .toBuffer();
-
-    const newPhoto = frame.composite([{ input: _photoBuffer }]).png();
-
-    resolve(newPhoto);
-  });
-}
-
-function generatePhotoFrame(
-  width: number,
-  height: number,
-  background: { r: number; g: number; b: number; alpha: number } = {
-    r: 255,
-    g: 255,
-    b: 255,
-    alpha: 1,
-  }
-) {
-  const frame = sharp({
-    create: {
-      width,
-      height,
-      channels: 4,
-      background,
-    },
-  });
-  return frame;
 }
